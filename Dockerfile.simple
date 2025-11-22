@@ -6,6 +6,28 @@ FROM immisterio/lampac:latest
 ENV PORT=9118
 ENV ASPNETCORE_ENVIRONMENT=Production
 
-# Запуск приложения на динамическом порту Railway
-# Готовый образ уже имеет правильный ENTRYPOINT, просто переопределяем порт
-CMD /usr/share/dotnet/dotnet Lampac.dll --urls "http://0.0.0.0:${PORT}"
+# Создаём startup script который запускает Lampac и показывает пароль
+RUN echo '#!/bin/sh\n\
+echo "================================="\n\
+echo "Starting Lampac on port ${PORT}"\n\
+echo "================================="\n\
+/usr/share/dotnet/dotnet Lampac.dll --urls "http://0.0.0.0:${PORT}" &\n\
+LAMPAC_PID=$!\n\
+sleep 10\n\
+echo "================================="\n\
+echo "ADMIN PASSWORD:"\n\
+if [ -f /home/passwd ]; then\n\
+  cat /home/passwd\n\
+elif [ -f passwd ]; then\n\
+  cat passwd\n\
+elif [ -f /home/lampac/passwd ]; then\n\
+  cat /home/lampac/passwd\n\
+else\n\
+  echo "Password file not found, checking all locations..."\n\
+  find / -name passwd -type f 2>/dev/null | head -5\n\
+fi\n\
+echo "================================="\n\
+wait $LAMPAC_PID\n\
+' > /start.sh && chmod +x /start.sh
+
+ENTRYPOINT ["/start.sh"]
