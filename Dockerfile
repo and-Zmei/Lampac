@@ -31,13 +31,14 @@ RUN curl -fSL -k -o dotnet.tar.gz \
     && tar -oxzf dotnet.tar.gz -C /usr/share/dotnet \
     && rm dotnet.tar.gz
 
-# Скачивание и распаковка Lampac (с retry для надежности)
-RUN curl -L -k -o publish.zip \
-    --retry 10 \
-    --retry-delay 3 \
-    --retry-max-time 600 \
-    --connect-timeout 60 \
-    --max-time 600 \
+# Скачивание и распаковка Lampac (с агрессивным retry и resume)
+RUN curl -L -k -C - -o publish.zip \
+    --retry 15 \
+    --retry-all-errors \
+    --retry-delay 5 \
+    --connect-timeout 30 \
+    --speed-limit 50000 \
+    --speed-time 30 \
     https://github.com/immisterio/Lampac/releases/latest/download/publish.zip \
     && unzip -o publish.zip && rm -f publish.zip && rm -rf merchant \
     && rm -rf runtimes/os* && rm -rf runtimes/win* && rm -rf runtimes/linux-arm runtimes/linux-arm64 runtimes/linux-musl-arm64 runtimes/linux-musl-x64 \
