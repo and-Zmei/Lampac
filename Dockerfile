@@ -19,14 +19,26 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Установка .NET Runtime 9.0.9
-RUN curl -fSL -k -o dotnet.tar.gz https://builds.dotnet.microsoft.com/dotnet/aspnetcore/Runtime/9.0.9/aspnetcore-runtime-9.0.9-linux-x64.tar.gz \
+# Установка .NET Runtime 9.0.9 (с retry для надежности)
+RUN curl -fSL -k -o dotnet.tar.gz \
+    --retry 10 \
+    --retry-delay 3 \
+    --retry-max-time 600 \
+    --connect-timeout 60 \
+    --max-time 600 \
+    https://builds.dotnet.microsoft.com/dotnet/aspnetcore/Runtime/9.0.9/aspnetcore-runtime-9.0.9-linux-x64.tar.gz \
     && mkdir -p /usr/share/dotnet \
     && tar -oxzf dotnet.tar.gz -C /usr/share/dotnet \
     && rm dotnet.tar.gz
 
-# Скачивание и распаковка Lampac
-RUN curl -L -k -o publish.zip https://github.com/immisterio/Lampac/releases/latest/download/publish.zip \
+# Скачивание и распаковка Lampac (с retry для надежности)
+RUN curl -L -k -o publish.zip \
+    --retry 10 \
+    --retry-delay 3 \
+    --retry-max-time 600 \
+    --connect-timeout 60 \
+    --max-time 600 \
+    https://github.com/immisterio/Lampac/releases/latest/download/publish.zip \
     && unzip -o publish.zip && rm -f publish.zip && rm -rf merchant \
     && rm -rf runtimes/os* && rm -rf runtimes/win* && rm -rf runtimes/linux-arm runtimes/linux-arm64 runtimes/linux-musl-arm64 runtimes/linux-musl-x64 \
     && touch isdocker
@@ -34,8 +46,14 @@ RUN curl -L -k -o publish.zip https://github.com/immisterio/Lampac/releases/late
 # Обновление конфигурации
 RUN curl -k -s https://raw.githubusercontent.com/immisterio/Lampac/main/Build/Docker/update.sh | bash
 
-# Установка TorrServer
-RUN mkdir -p torrserver && curl -L -k -o torrserver/TorrServer-linux https://github.com/YouROK/TorrServer/releases/latest/download/TorrServer-linux-amd64 \
+# Установка TorrServer (с retry для надежности)
+RUN mkdir -p torrserver && curl -L -k -o torrserver/TorrServer-linux \
+    --retry 10 \
+    --retry-delay 3 \
+    --retry-max-time 600 \
+    --connect-timeout 60 \
+    --max-time 600 \
+    https://github.com/YouROK/TorrServer/releases/latest/download/TorrServer-linux-amd64 \
     && chmod +x torrserver/TorrServer-linux
 
 # Создание базовой конфигурации для облачного деплоя (weblog отключен для Railway)
