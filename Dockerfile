@@ -3,10 +3,12 @@ FROM debian:12.5-slim
 # Railway динамически назначает PORT через переменную окружения
 ENV PORT=9118
 # Минимизация логирования для Railway (лимит 500 logs/sec)
+# Устанавливаем Error чтобы показывать только критичные ошибки
 ENV ASPNETCORE_ENVIRONMENT=Production
-ENV Logging__LogLevel__Default=Warning
-ENV Logging__LogLevel__Microsoft=Warning
-ENV Logging__LogLevel__Microsoft.AspNetCore=Warning
+ENV Logging__LogLevel__Default=Error
+ENV Logging__LogLevel__Microsoft=Error
+ENV Logging__LogLevel__Microsoft.AspNetCore=Error
+ENV Logging__Console__LogLevel__Default=Error
 EXPOSE ${PORT}
 WORKDIR /home
 
@@ -58,7 +60,8 @@ RUN mkdir -p torrserver && curl -L -k -o torrserver/TorrServer-linux \
     && chmod +x torrserver/TorrServer-linux
 
 # Создание базовой конфигурации для облачного деплоя (weblog отключен для Railway)
-RUN echo '{"listen":{"port":"$PORT","scheme":"https"},"KnownProxies":[{"ip":"0.0.0.0","prefixLength":0}],"mikrotik":true,"typecache":"mem","watcherInit":"cron","pirate_store":false,"rch":{"keepalive":900},"weblog":{"enable":false},"chromium":{"enable":false},"firefox":{"enable":false},"LampaWeb":{"autoupdate":false,"initPlugins":{"timecode":false,"backup":false,"sync":false}},"cub":{"enable":true},"tmdb":{"enable":true},"serverproxy":{"verifyip":false,"buffering":{"enable":false},"image":{"cache":false,"cache_rsize":false}},"online":{"checkOnlineSearch":false}}' > /home/init.conf
+# Порт передаётся через --urls в ENTRYPOINT, не через init.conf
+RUN echo '{"KnownProxies":[{"ip":"0.0.0.0","prefixLength":0}],"mikrotik":true,"typecache":"mem","watcherInit":"cron","pirate_store":false,"rch":{"keepalive":900},"weblog":{"enable":false},"chromium":{"enable":false},"firefox":{"enable":false},"LampaWeb":{"autoupdate":false,"initPlugins":{"timecode":false,"backup":false,"sync":false}},"cub":{"enable":true},"tmdb":{"enable":true},"serverproxy":{"verifyip":false,"buffering":{"enable":false},"image":{"cache":false,"cache_rsize":false}},"online":{"checkOnlineSearch":false}}' > /home/init.conf
 
 # Конфигурация JacRed
 RUN echo '"typesearch":"webapi","merge":null' > /home/module/JacRed.conf
