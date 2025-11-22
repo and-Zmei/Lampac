@@ -1,0 +1,37 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Documentation
+README.md
+RAILWAY_DEPLOY.md
+Termux/README.md
+
+# Build artifacts
+**/bin
+**/obj
+**/publish
+**/.vs
+**/.vscode
+
+# Railway
+railway.toml
+
+# Scripts
+install.sh
+install_home.sh
+update.sh
+
+# Build directory (not needed in container)
+Build/
+
+# IDE
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
