@@ -1,0 +1,11 @@
+# Используем готовый Docker образ Lampac
+# Это решает проблемы с логированием и долгой сборкой
+FROM immisterio/lampac:latest
+
+# Railway переменные
+ENV PORT=9118
+ENV ASPNETCORE_ENVIRONMENT=Production
+
+# Запуск приложения на динамическом порту Railway
+# Готовый образ уже имеет правильный ENTRYPOINT, просто переопределяем порт
+CMD /usr/share/dotnet/dotnet Lampac.dll --urls "http://0.0.0.0:${PORT}"

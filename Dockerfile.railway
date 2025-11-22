@@ -1,0 +1,10 @@
+# Используем готовый образ Lampac из Docker Hub
+# Это намного быстрее и надежнее чем сборка из исходников
+FROM immisterio/lampac:latest
+
+# Railway переменные окружения
+ENV PORT=9118
+ENV ASPNETCORE_ENVIRONMENT=Production
+
+# Переопределяем ENTRYPOINT для Railway порта
+ENTRYPOINT ["/bin/sh", "-c", "/usr/share/dotnet/dotnet Lampac.dll --urls \"http://0.0.0.0:${PORT}\" > /dev/null 2>&1"]
