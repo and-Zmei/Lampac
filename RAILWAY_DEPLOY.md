@@ -117,6 +117,29 @@ railway up
 - Некоторые источники могут требовать дополнительной настройки в init.conf
 - Проверьте, что rhub (Remote Control Hub) настроен правильно для источников, требующих его
 
+### Ошибка: "Railway rate limit of 500 logs/sec reached"
+**Проблема**: Railway ограничивает 500 логов в секунду, приложение превышает лимит.
+
+**Решение** (уже применено в Dockerfile):
+- `weblog` отключен в init.conf (`"weblog":{"enable":false}`)
+- Уровень логирования .NET установлен в Warning через переменные окружения
+- Dockerfile оптимизирован для минимального логирования
+
+**Если проблема сохраняется**:
+1. Через Railway Dashboard → Variables добавьте:
+   ```
+   Logging__LogLevel__Default=Error
+   Logging__LogLevel__Microsoft=Error
+   ```
+2. Перезапустите приложение
+
+**Для включения детального логирования** (только для отладки):
+1. Временно измените через admin панель init.conf:
+   ```json
+   "weblog": {"enable": true}
+   ```
+2. Не забудьте отключить после отладки!
+
 ## Поддержка
 
 - Telegram группа: https://t.me/+TIXtgvGBBOc3ZTUy
